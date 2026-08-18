@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>المحقق فلفل</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Tahoma,Arial,sans-serif;
+background:#10131a;
+color:#f5f5f5;
+min-height:100vh
+}
+
+button{font-family:inherit;cursor:pointer}
+
+.app{
+max-width:1050px;
+margin:auto;
+min-height:100vh;
+background:linear-gradient(145deg,#171b25,#0d1016)
+}
+
+header{
+padding:20px 28px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:15px;
+border-bottom:1px solid #2b3240;
+background:#171b25
+}
+
+.logo{
+font-size:28px;
+font-weight:900;
+color:#ffd166
+}
+
+.stats{
+display:flex;
+gap:10px;
+flex-wrap:wrap
+}
+
+.pill{
+background:#252c39;
+padding:8px 13px;
+border-radius:20px;
+color:#dce3ef;
+font-size:14px
+}
+
+main{padding:28px}
+
+.screen{display:none}
+.screen.active{display:block}
+
+.hero{
+background:radial-gradient(circle at 80% 20%,#4b3212,#1b202b 38%,#12151c);
+border:1px solid #343c4c;
+border-radius:24px;
+padding:45px 30px;
+text-align:center
+}
+
+.badge{
+display:inline-block;
+background:#ffd166;
+color:#191919;
+padding:7px 14px;
+border-radius:20px;
+font-weight:bold
+}
+
+h1{
+font-size:48px;
+margin:12px 0
+}
+
+.hero p{
+color:#c7cedb;
+font-size:18px;
+line-height:1.9;
+max-width:720px;
+margin:0 auto 25px
+}
+
+.btn{
+border:0;
+border-radius:14px;
+padding:13px 20px;
+font-size:16px;
+font-weight:bold;
+background:#ffd166;
+color:#161616;
+transition:.2s
+}
+
+.btn:hover{
+transform:translateY(-2px);
+filter:brightness(1.08)
+}
+
+.btn.secondary{
+background:#293242;
+color:#fff
+}
+
+.btn.green{
+background:#06d6a0;
+color:#102019
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+gap:16px;
+margin-top:22px
+}
+
+.card,.suspect{
+background:#1a202b;
+border:1px solid #303949;
+border-radius:18px;
+padding:20px
+}
+
+.card h3{
+color:#ffd166
+}
+
+.card p,.suspect p{
+color:#c4cad5;
+line-height:1.7
+}
+
+.scene{
+min-height:300px;
+background:
+linear-gradient(#0004,#0008),
+radial-gradient(circle at 50% 30%,#5b3e20,#22262d 45%,#11151a);
+border-radius:22px;
+border:1px solid #414957;
+padding:25px
+}
+
+.clues,.suspects{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:14px;
+margin-top:18px
+}
+
+.clue{
+background:#202735;
+border:1px solid #394354;
+border-radius:15px;
+padding:16px
+}
+
+.clue.found{
+border-color:#06d6a0;
+background:#152a27
+}
+
+.clue button{
+margin-top:10px;
+width:100%
+}
+
+.avatar{
+font-size:54px
+}
+
+.dialogue,.notice,.result{
+background:#12161e;
+border:1px solid #343c4b;
+border-radius:18px;
+padding:22px;
+margin:18px 0;
+line-height:1.9
+}
+
+.options{
+display:grid;
+gap:10px
+}
+
+.options .btn{
+background:#252e3d;
+color:#fff;
+text-align:right
+}
+
+.big{
+font-size:75px
+}
+
+.score{
+font-size:28px;
+color:#ffd166;
+font-weight:bold
+}
+
+input{
+outline:none
+}
+
+footer{
+text-align:center;
+color:#6f7887;
+padding:20px
+}
+
+@media(max-width:650px){
+h1{font-size:35px}
+main{padding:18px}
+header{padding:16px}
+.logo{font-size:22px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div class="logo">
+🕵️ المحقق فلفل
+</div>
+
+<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+
+<div class="pill">
+👤 <b id="currentUser">زائر</b>
+</div>
+
+<div class="pill">
+⭐ <b id="score">0</b>
+</div>
+
+<div class="pill">
+🔎 <b id="clueCount">0</b>/4
+</div>
+
+<button class="btn secondary"
+style="padding:8px 12px;font-size:13px"
+onclick="logout()">
+خروج
+</button>
+
+</div>
+
+</header>
+
+<main>
+
+<!-- LOGIN -->
+
+<section id="login" class="screen active">
+
+<div class="hero">
+
+<div class="badge">
+🗃️ نظام ملفات المحققين
+</div>
+
+<h1>
+تسجيل الدخول
+</h1>
+
+<p>
+اكتب اسم المحقق وابدأ مغامرتك.
+اللعبة تحفظ بيانات المستخدم على الجهاز.
+</p>
+
+<input
+id="username"
+maxlength="20"
+placeholder="اسم المحقق"
+style="
+width:min(420px,100%);
+padding:15px;
+border-radius:13px;
+border:1px solid #3a4352;
+background:#10151d;
+color:white;
+font-size:17px;
+text-align:center;
+margin:8px 0 12px">
+
+<br>
+
+<button class="btn" onclick="login()">
+دخول 🕵️
+</button>
+
+<div id="loginMsg"
+style="color:#ef476f;margin-top:12px">
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>
+👥 المستخدمون المحفوظون
+</h3>
+
+<div id="usersList">
+</div>
+
+</div>
+
+</section>
+
+
+<!-- HOME -->
+
+<section id="home" class="screen">
+
+<div class="hero">
+
+<div class="badge">
+قضايا غريبة جدًا 🚨
+</div>
+
+<h1>
+المحقق فلفل
+</h1>
+
+<p>
+روح مسرح الجريمة، اجمع الأدلة،
+استجوب المشتبه بهم،
+وبعدها اقبض على المجرم...
+أو حاول ما تظلمش حد 😂
+</p>
+
+<button class="btn" onclick="startCase()">
+ابدأ التحقيق 🔍
+</button>
+
+</div>
+
+<div class="grid">
+
+<div class="card">
+
+<h3>
+📁 القضية
+</h3>
+
+<p>
+اختفاء صينية كشري أسطورية
+من مطعم أبو شخلوبة.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>
+🧠 طريقة اللعب
+</h3>
+
+<p>
+فتش مسرح الجريمة،
+اجمع الأدلة،
+واستجوب المشتبه بهم.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>
+😂 تحذير
+</h3>
+
+<p>
+المحقق فلفل لا يتحمل مسؤولية
+أي شخص يتهم الشيف بدون دليل.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- CRIME SCENE -->
+
+<section id="crime" class="screen">
+
+<h2>
+🚨 مسرح الجريمة
+</h2>
+
+<div class="notice">
+
+الساعة 2:17 صباحًا.
+
+اختفت صينية الكشري الكبيرة من المطبخ.
+
+مفيش كسر في الباب...
+
+لكن في ريحة بصل محمر مريبة جدًا.
+
+</div>
+
+<div class="scene">
+
+<h2>
+🍲 المطبخ
+</h2>
+
+<p>
+الطاولة فاضية،
+الحلة مفتوحة،
+والكشري اختفى في ظروف غامضة.
+</p>
+
+<p>
+فلفل:
+«واضح إن المجرم محترف...
+أو جعان جدًا.»
+</p>
+
+</div>
+
+<h3>
+🔍 فتّش المكان
+</h3>
+
+<div class="clues" id="clues">
+</div>
+
+<br>
+
+<button
+class="btn green"
+id="toSuspects"
+onclick="go('suspects')"
+disabled>
+
+الانتقال للمشتبه بهم 👥
+
+</button>
+
+</section>
+
+
+<!-- SUSPECTS -->
+
+<section id="suspects" class="screen">
+
+<h2>
+👥 المشتبه بهم
+</h2>
+
+<div class="notice">
+
+اسأل كل واحد.
+
+ركز في التفاصيل؛
+المجرم ممكن يقول الحقيقة بالغلط.
+
+</div>
+
+<div class="suspects">
+
+<div class="suspect">
+
+<div class="avatar">
+👨‍🍳
+</div>
+
+<h3>
+عم رجب — الشيف
+</h3>
+
+<p>
+بيقول إنه كان بيقفل المطعم.
+</p>
+
+<button class="btn secondary"
+onclick="interrogate('ragab')">
+
+استجواب
+
+</button>
+
+</div>
+
+
+<div class="suspect">
+
+<div class="avatar">
+🧹
+</div>
+
+<h3>
+سوسو — عاملة النظافة
+</h3>
+
+<p>
+بتقول إنها كانت بتنضف المخزن.
+</p>
+
+<button class="btn secondary"
+onclick="interrogate('soso')">
+
+استجواب
+
+</button>
+
+</div>
+
+
+<div class="suspect">
+
+<div class="avatar">
+🛵
+</div>
+
+<h3>
+كريم — عامل التوصيل
+</h3>
+
+<p>
+بيقول إنه كان مستني أوردر.
+</p>
+
+<button class="btn secondary"
+onclick="interrogate('karim')">
+
+استجواب
+
+</button>
+
+</div>
+
+</div>
+
+<br>
+
+<button class="btn"
+onclick="go('accuse')">
+
+عندي أدلة كفاية! ⚖️
+
+</button>
+
+</section>
+
+
+<!-- INTERROGATION -->
+
+<section id="interrogate" class="screen">
+
+<h2 id="intTitle">
+استجواب
+</h2>
+
+<div class="dialogue"
+id="dialogue">
+</div>
+
+<div class="options"
+id="options">
+</div>
+
+<br>
+
+<button class="btn secondary"
+onclick="go('suspects')">
+
+رجوع
+
+</button>
+
+</section>
+
+
+<!-- ACCUSE -->
+
+<section id="accuse" class="screen">
+
+<h2>
+⚖️ لحظة القرار
+</h2>
+
+<div class="notice">
+
+جمعت
+<b id="finalClues">0</b>
+من 4 أدلة.
+
+اختار المتهم بعناية...
+
+</div>
+
+<div class="grid">
+
+<button class="btn secondary"
+onclick="finish('ragab')">
+
+👨‍🍳 أتهم عم رجب
+
+</button>
+
+<button class="btn secondary"
+onclick="finish('soso')">
+
+🧹 أتهم سوسو
+
+</button>
+
+<button class="btn secondary"
+onclick="finish('karim')">
+
+🛵 أتهم كريم
+
+</button>
+
+</div>
+
+</section>
+
+
+<!-- RESULT -->
+
+<section id="result" class="screen">
+
+<div class="result" style="text-align:center">
+
+<div class="big" id="resultEmoji">
+🏆
+</div>
+
+<h1 id="resultTitle">
+القضية اتحلت!
+</h1>
+
+<p id="resultText">
+</p>
+
+<div class="score">
+
+النقاط:
+<span id="resultScore">
+0
+</span>
+
+</div>
+
+<br>
+
+<button class="btn"
+onclick="go('home')">
+
+العودة للقائمة 🔄
+
+</button>
+
+</div>
+
+</section>
+
+</main>
+
+<footer>
+
+المحقق فلفل © 2026
+
+</footer>
+
+</div>
+
+
+<script>
+
+let score=0;
+
+let found=new Set();
+
+let current='';
+
+let currentUser='';
+
+const KEY='felfel_detectives_v2';
+
+
+/* USERS */
+
+function users(){
+
+try{
+
+return JSON.parse(
+localStorage.getItem(KEY)||'{}'
+);
+
+}catch(e){
+
+return {};
+
+}
+
+}
+
+
+function save(){
+
+if(!currentUser)return;
+
+let u=users();
+
+u[currentUser]={
+score:score,
+found:[...found]
+};
+
+localStorage.setItem(
+KEY,
+JSON.stringify(u)
+);
+
+renderUsers();
+
+}
+
+
+function load(n){
+
+let u=users();
+
+let d=u[n]||{};
+
+currentUser=n;
+
+score=d.score||0;
+
+found=new Set(
+d.found||[]
+);
+
+document.getElementById(
+'currentUser'
+).textContent=n;
+
+update();
+
+renderClues();
+
+renderUsers();
+
+}
+
+
+function login(){
+
+let n=document
+.getElementById('username')
+.value
+.trim();
+
+if(!n){
+
+document.getElementById(
+'loginMsg'
+).textContent=
+'اكتب اسم المحقق 😄';
+
+return;
+
+}
+
+load(n);
+
+go('home');
+
+}
+
+
+function selectUser(n){
+
+load(n);
+
+go('home');
+
+}
+
+
+function logout(){
+
+save();
+
+currentUser='';
+
+document.getElementById(
+'currentUser'
+).textContent='زائر';
+
+renderUsers();
+
+go('login');
+
+}
+
+
+function renderUsers(){
+
+let b=document.getElementById(
+'usersList'
+);
+
+if(!b)return;
+
+let u=users();
+
+let ns=Object.keys(u);
+
+if(!ns.length){
+
+b.innerHTML=
+'<p>لسه مفيش مستخدمين محفوظين.</p>';
+
+return;
+
+}
+
+b.innerHTML=ns.map(n=>`
+
+<div class="notice">
+
+🕵️ ${n}
+
+—
+
+⭐ ${u[n].score||0}
+
+<button
+class="btn secondary"
+onclick='selectUser(${JSON.stringify(n)})'
+style="margin-right:10px">
+
+دخول
+
+</button>
+
+</div>
+
+`).join('');
+
+}
+
+
+/* UPDATE */
+
+function update(){
+
+document.getElementById(
+'score'
+).textContent=score;
+
+document.getElementById(
+'clueCount'
+).textContent=found.size;
+
+if(currentUser){
+
+save();
+
+}
+
+}
+
+
+/* NAVIGATION */
+
+function go(id){
+
+document
+.querySelectorAll('.screen')
+.forEach(x=>
+x.classList.remove('active')
+);
+
+document
+.getElementById(id)
+.classList.add('active');
+
+if(id==='accuse'){
+
+document.getElementById(
+'finalClues'
+).textContent=found.size;
+
+}
+
+scrollTo(0,0);
+
+}
+
+
+/* START CASE */
+
+function startCase(){
+
+score=0;
+
+found.clear();
+
+update();
+
+renderClues();
+
+go('crime');
+
+}
+
+
+/* CLUES */
+
+const clues=[
+
+[
+'🥄',
+'معلقة عليها صلصة',
+'عليها آثار كشري ولسه دافية.'
+],
+
+[
+'👟',
+'بصمة حذاء',
+'مقاس 42 وبها طين.'
+],
+
+[
+'🧾',
+'إيصال غريب',
+'شراء 3 علب بصل محمر الساعة 1:58. المشتري: ك.م.'
+],
+
+[
+'📹',
+'كاميرا المطبخ',
+'سجلت شخصًا يرتدي جاكت توصيل قرب المطبخ الساعة 2:05.'
+]
+
+];
+
+
+function renderClues(){
+
+let b=document.getElementById(
+'clues'
+);
+
+if(!b)return;
+
+b.innerHTML=clues.map(
+(c,i)=>`
+
+<div class="clue ${
+found.has(i)?'found':''
+}">
+
+<div style="font-size:35px">
+${c[0]}
+</div>
+
+<h3>
+${c[1]}
+</h3>
+
+<p>
+
+${
+found.has(i)
+?c[2]
+:'اضغط لفحص الدليل...'
+}
+
+</p>
+
+${
+found.has(i)
+?'✅ تم تسجيل الدليل'
+:`
+<button
+class="btn"
+onclick="findClue(${i})">
+
+فحص 🔎
+
+</button>
+`
+}
+
+</div>
+
+`
+).join('');
+
+document.getElementById(
+'toSuspects'
+).disabled=found.size<4;
+
+}
+
+
+function findClue(i){
+
+if(found.has(i))return;
+
+found.add(i);
+
+score+=100;
+
+update();
+
+renderClues();
+
+}
+
+
+/* INTERROGATION */
+
+const qs={
+
+ragab:[
+
+[
+'فين كنت الساعة 2؟',
+
+'كنت بقفل الحلة وبراجع الحسابات. وبعدين كنت بفكر في الكشري... بس تفكير بس!'
+],
+
+[
+'شفته حد دخل المطبخ؟',
+
+'كريم عامل التوصيل دخل قبل ما يمشي وقال إنه نسي حاجة.'
+]
+
+],
+
+soso:[
+
+[
+'كنتِ فين؟',
+
+'في المخزن. ولقيت كيس بصل محمر فاضي.'
+],
+
+[
+'شفتي كريم؟',
+
+'أيوه، كان متوتر جدًا وبيسأل عن المطبخ.'
+]
+
+],
+
+karim:[
+
+[
+'كنت بتعمل إيه هنا؟',
+
+'كنت مستني أوردر. بس دخلت المطبخ ثانيتين.'
+],
+
+[
+'ليه إيصال البصل باسم ك.م؟',
+
+'ممكن يكون كريم... وممكن كمال... هو إيه التحقيق ده؟ 😂'
+]
+
+]
+
+};
+
+
+function interrogate(w){
+
+current=w;
+
+let names={
+ragab:'عم رجب 👨‍🍳',
+soso:'سوسو 🧹',
+karim:'كريم 🛵'
+};
+
+document.getElementById(
+'intTitle'
+).textContent=
+'استجواب '+names[w];
+
+ask(0);
+
+}
+
+
+function ask(i){
+
+let q=qs[current][i];
+
+document.getElementById(
+'dialogue'
+).innerHTML=
+
+'<b>فلفل:</b> '
++q[0]
++'<br><br>'
++'<b>المشتبه:</b> '
++q[1];
+
+let b=document.getElementById(
+'options'
+);
+
+if(i+1<qs[current].length){
+
+b.innerHTML=`
+
+<button
+class="btn"
+onclick="ask(${i+1})">
+
+سؤال تاني ➡️
+
+</button>
+
+`;
+
+}else{
+
+b.innerHTML=`
+
+<button
+class="btn"
+onclick="go('suspects')">
+
+كفاية كده 🧠
+
+</button>
+
+`;
+
+}
+
+go('interrogate');
+
+}
+
+
+/* FINAL ANSWER */
+
+function finish(w){
+
+let e=document.getElementById(
+'resultEmoji'
+);
+
+let t=document.getElementById(
+'resultTitle'
+);
+
+let r=document.getElementById(
+'resultText'
+);
+
+
+if(w==='karim' && found.size>=3){
+
+score+=300;
+
+e.textContent='🏆';
+
+t.textContent=
+'برافو يا فلفل!';
+
+r.innerHTML=
+
+'كريم هو المجرم! الأدلة كشفت كل حاجة.<br><br>'
++
+'قال: «كنت جعان يا باشا... والصينية كانت بتناديني!» 😂';
+
+}
+
+else if(w==='karim'){
+
+e.textContent='😅';
+
+t.textContent=
+'عرفت المجرم بالحظ!';
+
+r.textContent=
+'المتهم صح، لكنك استعجلت في التحقيق.';
+
+}
+
+else{
+
+score=Math.max(
+0,
+score-150
+);
+
+e.textContent='🤦';
+
+t.textContent=
+'ظلمت البني آدم!';
+
+r.innerHTML=
+'المتهم بريء! المجرم الحقيقي هو <b>كريم</b>.';
+
+}
+
+
+document.getElementById(
+'resultScore'
+).textContent=score;
+
+update();
+
+go('result');
+
+}
+
+
+/* INIT */
+
+renderClues();
+
+renderUsers();
+
+update();
+
+</script>
+
+</body>
+</html>
