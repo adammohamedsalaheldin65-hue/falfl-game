@@ -1,0 +1,13 @@
+المحقق فلفل v5.9 — Online Accounts
+
+النسخة دي نقلت الحسابات من Local Storage إلى Online Auth + Cloud Save.
+
+بعد إنشاء Supabase Project:
+1) شغّل backend/supabase_setup.sql.
+2) افتح اللعبة.
+3) اختر Online Setup.
+4) أدخل Project URL.
+5) أدخل Publishable Key فقط.
+6) اعمل Sign Up / Log In.
+
+الحفظ المحلي مازال موجود كنسخة احتياطية.

@@ -1,0 +1,9 @@
+المحقق فلفل v5.9.1 — Live Supabase
+
+تم ربط المشروع مباشرة بمشروع Supabase الحقيقي.
+- Online Auth جاهز.
+- Cloud Save table جاهز.
+- RLS مفعّل لكل مستخدم.
+- Project URL وPublishable Key مضمنان في نسخة العميل.
+- لا يوجد Secret/Service Role key داخل اللعبة.
+- يظل Online Settings موجودًا كإعداد احتياطي.

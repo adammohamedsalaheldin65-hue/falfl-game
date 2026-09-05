@@ -1,0 +1,16 @@
+المحقق فلفل v5.8 — Account Storage
+
+تم تحويل نظام الحسابات من ملف Account واحد إلى Database محلية متعددة الحسابات.
+
+Storage:
+user://felfel_accounts.json
+
+كل Account يحتوي على:
+- account_id
+- email
+- password_salt
+- password_hash
+- created_at
+- last_login
+
+وكل حساب له Save منفصل.

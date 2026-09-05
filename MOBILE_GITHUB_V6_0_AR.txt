@@ -1,0 +1,15 @@
+المحقق فلفل v6.0 — GitHub + Mobile Web
+
+تمت إضافة:
+- تمييز تلقائي بين الكمبيوتر والموبايل/Touch.
+- Virtual Joystick للحركة.
+- Swipe لتحريك الكاميرا.
+- أزرار Touch: تفاعل، جري، قفز/فرامل، شنطة القضايا، Pause.
+- نفس Keyboard + Mouse القديم على الكمبيوتر بدون تغيير.
+- Low Quality تلقائيًا على الهاتف.
+- Web Export single-threaded لتوافق أفضل مع GitHub Pages والموبايل.
+- Virtual keyboard للـLogin/Sign Up في نسخة Web.
+- GitHub Actions لبناء ونشر نسخة Web تلقائيًا باستخدام Godot 4.7.2.
+- Supabase Online Accounts + Cloud Save كما هي.
+
+ملاحظة: Public Supabase Publishable Key صالح للعميل، والحماية الأساسية بواسطة RLS.
