@@ -1,0 +1,58 @@
+name: Build Windows Desktop
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Godot 4.7.2 and export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          GODOT_VERSION="4.7.2"
+          RELEASE="stable"
+
+          wget -q "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-${RELEASE}/Godot_v${GODOT_VERSION}-${RELEASE}_linux.x86_64.zip"
+          unzip -q "Godot_v${GODOT_VERSION}-${RELEASE}_linux.x86_64.zip"
+          mv "Godot_v${GODOT_VERSION}-${RELEASE}_linux.x86_64" godot
+          chmod +x godot
+
+          wget -q "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-${RELEASE}/Godot_v${GODOT_VERSION}-${RELEASE}_export_templates.tpz"
+          rm -rf /tmp/godot_templates
+          mkdir -p /tmp/godot_templates
+          unzip -q "Godot_v${GODOT_VERSION}-${RELEASE}_export_templates.tpz" -d /tmp/godot_templates
+          mkdir -p "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.${RELEASE}"
+          cp -R /tmp/godot_templates/templates/. "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.${RELEASE}/"
+
+      - name: Import project
+        shell: bash
+        run: |
+          ./godot --headless --path . --editor --quit
+
+      - name: Export Windows ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/windows
+          rm -f build/windows/ElMohaqeq_Felfel_Windows.zip
+          ./godot --headless --verbose --path . --export-release "Windows Desktop" build/windows/ElMohaqeq_Felfel_Windows.zip
+          test -s build/windows/ElMohaqeq_Felfel_Windows.zip
+          unzip -l build/windows/ElMohaqeq_Felfel_Windows.zip
+
+      - name: Upload Windows game
+        uses: actions/upload-artifact@v4
+        with:
+          name: ElMohaqeq-Felfel-Windows
+          path: build/windows/ElMohaqeq_Felfel_Windows.zip
+          if-no-files-found: error
+          compression-level: 0
