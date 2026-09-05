@@ -1,0 +1,5 @@
+{
+  "project_url": "https://YOUR_PROJECT_REF.supabase.co",
+  "publishable_key": "sb_publishable_REPLACE_ME",
+  "note": "Use only the publishable key in the game client. Never put a secret/service-role key in the project."
+}
