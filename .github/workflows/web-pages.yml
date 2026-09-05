@@ -39,18 +39,27 @@ jobs:
           unzip -q "Godot_v${GODOT_VERSION}-${RELEASE}_export_templates.tpz" -d /tmp/godot_templates
           mkdir -p "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.${RELEASE}"
           cp -R /tmp/godot_templates/templates/. "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.${RELEASE}/"
+          echo "Installed Web templates:"
+          find "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.${RELEASE}" -maxdepth 1 -type f -printf '%f\n' | grep -E 'web|html' || true
 
       - name: Import project
         shell: bash
         run: |
           ./godot --headless --path . --editor --quit
 
-      - name: Export Web
+      - name: Export Web ZIP
         shell: bash
         run: |
+          set -euo pipefail
+          mkdir -p build
+          rm -rf build/web build/felfel-web.zip
+          ./godot --headless --verbose --path . --export-release "Web" build/felfel-web.zip
           mkdir -p build/web
-          ./godot --headless --path . --export-release "Web" build/web/index.html
+          unzip -q build/felfel-web.zip -d build/web
           touch build/web/.nojekyll
+          test -f build/web/index.html
+          echo "Web build files:"
+          ls -lah build/web
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
