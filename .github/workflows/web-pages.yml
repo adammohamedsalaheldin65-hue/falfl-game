@@ -1,4 +1,4 @@
-name: Build Godot Web + Deploy Pages
+name: Build V12.4 Mobile Preview + Deploy Pages
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -20,6 +20,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Apply latest V12.4 mobile preview overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .web_preview/felfel_v12_4_overlay.b64
+          base64 -d .web_preview/felfel_v12_4_overlay.b64 > /tmp/felfel_v12_4_overlay.zip
+          unzip -oq /tmp/felfel_v12_4_overlay.zip -d .
+          echo "Applied V12.4 phone preview overlay"
+          test -f SplashScreen.tscn
+          test -f MainMenu.tscn
+          test -f LoadingScreen.tscn
+          test -f scripts/BootState.gd
+          test -f assets/ui/main_menu_bg.svg
 
       - name: Download Godot 4.7.2 and export templates
         shell: bash
@@ -40,12 +54,13 @@ jobs:
           mkdir -p "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.${RELEASE}"
           cp -R /tmp/godot_templates/templates/. "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.${RELEASE}/"
 
-      - name: Import project
+      - name: Import latest project
         shell: bash
         run: |
+          set -euo pipefail
           ./godot --headless --path . --editor --quit
 
-      - name: Export Web
+      - name: Export Web SAFE phone build
         shell: bash
         run: |
           set -euo pipefail
@@ -56,7 +71,8 @@ jobs:
           test -f build/web/index.html
           test -f build/web/index.wasm
           test -f build/web/index.pck
-          echo "Godot Web build ready:"
+          printf '%s\n' 'V12.4 Mobile Preview' > build/web/VERSION.txt
+          echo "Godot V12.4 mobile preview build ready:"
           ls -lah build/web
 
       - name: Setup Pages
